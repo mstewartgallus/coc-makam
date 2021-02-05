@@ -53,8 +53,8 @@ concrete.resolve_conversion (clam Name Obj Body) (lam Obj (concrete.lambda Name 
       / expr ;
 
   expr ->
-      kind { "□" }
-      / typ { "*" }
+      typ { "□" }
+      / set { "*" }
       / zobject { "Z" }
       / z { <makam.int_literal> }
       / concrete.var { <variable> }

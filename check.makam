@@ -1,22 +1,35 @@
 check : term -> term -> prop.
-
-check typ kind.
+multistep : term -> term -> prop.
 
 (* Allow User Defined Axioms *)
 check (axiom _ A) A.
 
+check set typ.
+
 (* Functions/Dependent Products *)
-check (forall A Body) typ :-
-    (var:term -> check var A -> check (Body var) typ).
-check (lam A Body) (forall A C) :-
-    (var:term -> check var A -> check (Body var) (C var)).
-check (app F X) (B X) :-
-    check X A,
-    check F (forall A B).
+check (forall A B) L :-
+    check A _,
+    (x:term -> check x A -> check (B x) L).
+
+check (lam A N) (forall A B) :-
+    check A _,
+    (x:term -> check x A -> check (N x) (B x)).
+
+check (app M N) (B N) :-
+    check M (forall A B),
+    check N A.
+
+(* Normalization Rule *)
+
+(* FIXME
+
+ check M B :-
+    check M A,
+    multistep A B,
+    check B _. *)
 
 (* Normalization *)
 
-multistep : term -> term -> prop.
 step : term -> term -> prop.
 step_ : term -> term -> prop.
 

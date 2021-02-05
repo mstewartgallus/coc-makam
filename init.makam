@@ -24,8 +24,8 @@ eval : string -> string -> string -> prop.
 eval XStr TyStr YStr :-
     isocast XStr (Program : program term),
 
-    (* kind in kind is inconsistent *)
-    (check kind kind ->
+    (* type in type is inconsistent *)
+    (check typ typ ->
          eval_ Program Ty Y),
 
     isocast (pure Ty) (TyStr : string),

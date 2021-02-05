@@ -2,8 +2,8 @@ term : type.
 
 axiom : string -> term -> term.
 
-kind : term.
 typ : term.
+set : term.
 
 forall : term -> (term -> term) -> term.
 lam : term -> (term -> term) -> term.

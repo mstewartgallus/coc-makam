@@ -1,4 +1,4 @@
 (* Extend the language with some basic integer extras. *)
-check zobject typ.
+check zobject set.
 check (z _) zobject.
 check add (forall zobject (fun x => forall zobject (fun y => zobject))).
