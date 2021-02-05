@@ -1,45 +1,34 @@
 %use "ast".
 %use "program".
 %use "syntax".
-%use "maps".
-%use "constructive".
-%use "step".
+%use "check".
 %use "integers".
 
 exec : [A] instr A -> A -> prop.
-
 run : program A -> A -> prop.
 run (pure X) X.
 run (bind Instr F) Y :-
     exec Instr X,
     run (F X) Y.
 exec (nop X) X.
-exec (check X A B) X :-
-    maps X A B.
+exec (check X A) X :-
+    check X A.
 
-map_program : program term -> term -> term -> prop.
-map_program Program A B :-
-    run Program Result,
-    maps Result A B.
-
-typecheck : string -> string -> string -> prop.
-typecheck Input AStr BStr :-
-    isocast Input (Program : program term),
-
-    (* Basically put Type in Type.  A small inconsistency for rapid
-    prototyping instead of implementing universes. *)
-
-    (maps kind terminal kind ->
-         map_program Program A B),
-
-    isocast (pure A) (AStr : string),
-    isocast (pure B) (BStr : string).
-
-normalize : string -> string -> prop.
-normalize XStr YStr :-
-    isocast XStr (Program : program term),
+eval_ : program term -> term -> term -> prop.
+eval_ Program Type Result :-
     run Program X,
-    multistep X Y,
+    check X Type,
+    multistep X Result.
+
+eval : string -> string -> string -> prop.
+eval XStr TyStr YStr :-
+    isocast XStr (Program : program term),
+
+    (* kind in kind is inconsistent *)
+    (check kind kind ->
+         eval_ Program Ty Y),
+
+    isocast (pure Ty) (TyStr : string),
     isocast (pure Y) (YStr : string).
 
-normalize << (id Z ∘ axiom "foo" : 1 → Z) ∘ (id Z ∘ id Z) >> Result ?
+eval << (λ "x" : Z . "x" ) 1 >> Type Result ?

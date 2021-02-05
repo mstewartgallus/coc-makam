@@ -1,0 +1,34 @@
+check : term -> term -> prop.
+
+check typ kind.
+
+(* Allow User Defined Axioms *)
+check (axiom _ A) A.
+
+(* Functions/Dependent Products *)
+check (forall A Body) typ :-
+    (var:term -> check var A -> check (Body var) typ).
+check (lam A Body) (forall A C) :-
+    (var:term -> check var A -> check (Body var) (C var)).
+check (app F X) (B X) :-
+    check X A,
+    check F (forall A B).
+
+(* Normalization *)
+
+multistep : term -> term -> prop.
+step : term -> term -> prop.
+step_ : term -> term -> prop.
+
+multistep X Z :-
+    if step X Y
+    then multistep Y Z
+    else unify X Z.
+
+step X Y :-
+    if step_ X Y
+    then success
+    else structural @step_ X Y.
+
+step_ (app (lam A F) X) (F X) :-
+    check X A.
